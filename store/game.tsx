@@ -4,6 +4,7 @@ export interface gameState {
   winningPositions: number[][];
   occupiedPosition: number[];
   players: string[];
+  currentMove: string;
 }
 
 const initialState: gameState = {
@@ -19,6 +20,7 @@ const initialState: gameState = {
   ],
   occupiedPosition: [],
   players: [],
+  currentMove: "",
 };
 
 export const gameSlice = createSlice({
@@ -31,6 +33,9 @@ export const gameSlice = createSlice({
     setPlayers: (state, action: PayloadAction<string[]>) => {
       state.players = action.payload;
     },
+    setCurrentMove: (state, action: PayloadAction<string>) => {
+      state.currentMove = action.payload;
+    },
     resetStore: (state) => {
       state.occupiedPosition = [];
       state.players = [];
@@ -39,7 +44,7 @@ export const gameSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setOccupiedPosition, setPlayers, resetStore } =
+export const { setOccupiedPosition, setPlayers, setCurrentMove, resetStore } =
   gameSlice.actions;
 
 export default gameSlice.reducer;

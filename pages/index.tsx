@@ -1,92 +1,15 @@
-import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import type { NextPage } from "next";
-import Box from "components/Box";
-import { useSelector, useDispatch } from "react-redux";
-import { combinationN } from "utils/combinationN";
-import { isArrayInArray } from "utils/isArrayInArray";
 import { RootState } from "store";
-import { setOccupiedPosition, setPlayers, resetStore } from "store/game";
+import { useSelector, useDispatch } from "react-redux";
+import { setPlayers, setCurrentMove } from "store/game";
 
-const Home: NextPage = () => {
-  const [playerOneMoves, setPlayerOneMoves] = useState([]);
-  const [playerTwoMoves, setPlayerTwoMoves] = useState([]);
-  const [currentMove, setCurrentMove] = useState("");
-  const [winner, setWinner] = useState("");
+const Game: NextPage = () => {
+  const [currentMove] = useSelector((state: RootState) => [
+    state.game.currentMove,
+  ]);
   const dispatch = useDispatch();
-
-  const [winningPositions, occupiedPosition, players] = useSelector(
-    (state: RootState) => [
-      state.game.winningPositions,
-      state.game.occupiedPosition,
-      state.game.players,
-    ]
-  );
-
-  function handleMove(move) {
-    if (currentMove === players[0]) {
-      if (!occupiedPosition.includes(move)) {
-        const newArr = [...playerOneMoves, move];
-        const newArrSorted = newArr.slice().sort((a, b) => a - b);
-        setPlayerOneMoves(newArrSorted);
-        setCurrentMove(players[1]);
-      }
-    } else {
-      if (!occupiedPosition.includes(move)) {
-        const newArr = [...playerTwoMoves, move];
-        const newArrSorted = newArr.slice().sort((a, b) => a - b);
-        setPlayerTwoMoves(newArrSorted);
-        setCurrentMove(players[0]);
-      }
-    }
-
-    if (!occupiedPosition.includes(move)) {
-      dispatch(setOccupiedPosition(move));
-    }
-  }
-
-  function getSymbol(index: number) {
-    if (playerOneMoves.includes(index)) {
-      return "X";
-    } else if (playerTwoMoves.includes(index)) {
-      return "O";
-    }
-    return "";
-  }
-
-  function checkWinner(player, currentPlayer) {
-    if (player.length > 2) {
-      for (const c of combinationN(player, 3)) {
-        const compareComb = isArrayInArray(winningPositions, c);
-        if (compareComb) {
-          setWinner(currentPlayer);
-          reset();
-        }
-      }
-    }
-  }
-
-  function reset() {
-    setPlayerOneMoves([]);
-    setPlayerTwoMoves([]);
-    dispatch(resetStore());
-  }
-
-  useEffect(() => {
-    if (occupiedPosition.length === 9) {
-      if (!winner) {
-        console.log("Match Drawn. Resetting the board");
-        reset();
-      }
-    }
-  }, [occupiedPosition]);
-
-  useEffect(() => {
-    checkWinner(playerOneMoves, players[0]);
-  }, [playerOneMoves]);
-
-  useEffect(() => {
-    checkWinner(playerTwoMoves, players[1]);
-  }, [playerTwoMoves]);
+  const router = useRouter();
 
   function savePlayers(e) {
     e.preventDefault();
@@ -96,23 +19,60 @@ const Home: NextPage = () => {
       const newPlayers = [e.target[0].value, e.target[1].value];
       dispatch(setPlayers(newPlayers));
       setCurrentMove(e.target[0].value);
+      router.push("/game");
     }
   }
-
   return (
-    <div className="container mx-auto">
-      <form onSubmit={savePlayers}>
-        <input type="text" placeholder="Player 1 Name" id="player-1" />
-        <input type="text" placeholder="Player 2 Name" id="player-2" />
-        <button type="submit">Save</button>
-      </form>
-      <div className="grid grid-cols-3 w-[600px]">
-        {[...Array(9)].map((x, i) => (
-          <Box index={i} value={getSymbol(i)} handleMove={handleMove} key={i} />
-        ))}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Tic-Tac-Toe
+          </h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={savePlayers}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="player-1" className="sr-only">
+                Player 1
+              </label>
+              <input
+                id="player-1"
+                name="player-1"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Player 1"
+              />
+            </div>
+            <div>
+              <label htmlFor="player-2" className="sr-only">
+                Player 2
+              </label>
+              <input
+                id="player-2"
+                name="player-2"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Player 2"
+              />
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              <span className="absolute left-0 inset-y-0 flex items-center pl-3"></span>
+              Start
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
 
-export default Home;
+export default Game;
