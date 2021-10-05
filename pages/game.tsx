@@ -30,8 +30,6 @@ const Game: NextPage = () => {
     playerTwoMoves,
     currentMove,
     winner,
-    finished,
-    moveLog,
   ] = useSelector((state: RootState) => [
     state.game.winningPositions,
     state.game.occupiedPosition,
@@ -40,8 +38,6 @@ const Game: NextPage = () => {
     state.game.playerTwoMoves,
     state.game.currentMove,
     state.game.winner,
-    state.game.finished,
-    state.game.moveLog,
   ]);
 
   function handlePlayerMove(playerMove, setPlayerMove, move) {
