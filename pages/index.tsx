@@ -4,30 +4,23 @@ import Box from "components/Box";
 import { useSelector, useDispatch } from "react-redux";
 import { combinationN } from "utils/combinationN";
 import { RootState } from "store";
+import { setOccupiedPosition } from "store/game";
 
 const Home: NextPage = () => {
   const [playerOneMoves, setPlayerOneMoves] = useState([]);
   const [playerTwoMoves, setPlayerTwoMoves] = useState([]);
-  const [occupiedPosition, setOccupiedPosition] = useState([]);
   const [players, setPlayers] = useState([]);
   const [currentMove, setCurrentMove] = useState("");
   const [winner, setWinner] = useState("");
   const dispatch = useDispatch();
 
-  const winningPositions = useSelector(
-    (state: RootState) => state.game.winningPositions
+  const [winningPositions, occupiedPosition] = useSelector(
+    (state: RootState) => [
+      state.game.winningPositions,
+      state.game.occupiedPosition,
+    ]
   );
 
-  // const winningPositions = [
-  //   [0, 1, 2],
-  //   [3, 4, 5],
-  //   [6, 7, 8],
-  //   [0, 3, 6],
-  //   [1, 4, 7],
-  //   [2, 5, 8],
-  //   [0, 4, 8],
-  //   [2, 4, 6],
-  // ];
   function handleMove(move) {
     if (currentMove === players[0]) {
       if (!occupiedPosition.includes(move)) {
@@ -46,7 +39,8 @@ const Home: NextPage = () => {
     }
 
     if (!occupiedPosition.includes(move)) {
-      setOccupiedPosition((occupiedPosition) => [...occupiedPosition, move]);
+      dispatch(setOccupiedPosition(move));
+      // setOccupiedPosition((occupiedPosition) => [...occupiedPosition, move]);
     }
   }
 
