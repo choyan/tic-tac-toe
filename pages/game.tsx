@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import type { NextPage } from "next";
 import Box from "components/Box";
+import MoveLog from "components/MoveLog";
 import { useSelector, useDispatch } from "react-redux";
 import { combinationN } from "utils/combinationN";
 import { isArrayInArray } from "utils/isArrayInArray";
@@ -14,6 +15,7 @@ import {
   setPlayerOneMoves,
   setPlayerTwoMoves,
   setFinished,
+  setMoveLog,
 } from "store/game";
 
 const Game: NextPage = () => {
@@ -29,6 +31,7 @@ const Game: NextPage = () => {
     currentMove,
     winner,
     finished,
+    moveLog,
   ] = useSelector((state: RootState) => [
     state.game.winningPositions,
     state.game.occupiedPosition,
@@ -38,6 +41,7 @@ const Game: NextPage = () => {
     state.game.currentMove,
     state.game.winner,
     state.game.finished,
+    state.game.moveLog,
   ]);
 
   function handlePlayerMove(playerMove, setPlayerMove, move) {
@@ -50,10 +54,22 @@ const Game: NextPage = () => {
     if (!occupiedPosition.includes(move)) {
       if (currentMove === players[0]) {
         handlePlayerMove(playerOneMoves, setPlayerOneMoves, move);
+        dispatch(
+          setMoveLog({
+            location: move,
+            playerName: players[0],
+          })
+        );
         dispatch(setCurrentMove(players[1]));
       } else {
         handlePlayerMove(playerTwoMoves, setPlayerTwoMoves, move);
         dispatch(setCurrentMove(players[0]));
+        dispatch(
+          setMoveLog({
+            location: move,
+            playerName: players[1],
+          })
+        );
       }
       dispatch(setOccupiedPosition(move));
     }
@@ -124,9 +140,7 @@ const Game: NextPage = () => {
           <Box index={i} value={getSymbol(i)} handleMove={handleMove} key={i} />
         ))}
       </div>
-      <p className="mb-4 text-xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-lg">
-        {winner ? `Winner Is ${winner}!!!` : `Current Move: ${currentMove}`}
-      </p>
+      <MoveLog />
     </div>
   );
 };

@@ -1,11 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+export interface moveLog {
+  location: number;
+  playerName: string;
+}
+
 export interface gameState {
   winningPositions: number[][];
   occupiedPosition: number[];
   players: string[];
   playerOneMoves: number[];
   playerTwoMoves: number[];
+  moveLog: moveLog[];
   currentMove: string;
   winner: string;
   finished: boolean;
@@ -29,6 +35,7 @@ const initialState: gameState = {
   currentMove: "",
   winner: "",
   finished: false,
+  moveLog: [],
 };
 
 export const gameSlice = createSlice({
@@ -56,6 +63,9 @@ export const gameSlice = createSlice({
     setFinished: (state, action: PayloadAction<boolean>) => {
       state.finished = action.payload;
     },
+    setMoveLog: (state, action: PayloadAction<moveLog>) => {
+      state.moveLog.push(action.payload);
+    },
     resetStore: (state) => {
       state.occupiedPosition = [];
       state.players = [];
@@ -63,6 +73,7 @@ export const gameSlice = createSlice({
       state.playerOneMoves = [];
       state.playerTwoMoves = [];
       state.finished = false;
+      state.moveLog = [];
     },
   },
 });
@@ -76,6 +87,7 @@ export const {
   setWinner,
   resetStore,
   setFinished,
+  setMoveLog,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;
