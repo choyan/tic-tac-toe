@@ -31,17 +31,15 @@ export const gameSlice = createSlice({
     setPlayers: (state, action: PayloadAction<string[]>) => {
       state.players = action.payload;
     },
-    decrement: (state) => {
-      state.value -= 1;
-    },
-    incrementByAmount: (state, action: PayloadAction<number>) => {
-      state.value += action.payload;
+    resetStore: (state) => {
+      state.occupiedPosition = [];
+      state.players = [];
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setOccupiedPosition, setPlayers, decrement, incrementByAmount } =
+export const { setOccupiedPosition, setPlayers, resetStore } =
   gameSlice.actions;
 
 export default gameSlice.reducer;

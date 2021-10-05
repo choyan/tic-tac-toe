@@ -3,13 +3,13 @@ import type { NextPage } from "next";
 import Box from "components/Box";
 import { useSelector, useDispatch } from "react-redux";
 import { combinationN } from "utils/combinationN";
+import { isArrayInArray } from "utils/isArrayInArray";
 import { RootState } from "store";
-import { setOccupiedPosition, setPlayers } from "store/game";
+import { setOccupiedPosition, setPlayers, resetStore } from "store/game";
 
 const Home: NextPage = () => {
   const [playerOneMoves, setPlayerOneMoves] = useState([]);
   const [playerTwoMoves, setPlayerTwoMoves] = useState([]);
-  // const [players, setPlayers] = useState([]);
   const [currentMove, setCurrentMove] = useState("");
   const [winner, setWinner] = useState("");
   const dispatch = useDispatch();
@@ -41,24 +41,16 @@ const Home: NextPage = () => {
 
     if (!occupiedPosition.includes(move)) {
       dispatch(setOccupiedPosition(move));
-      // setOccupiedPosition((occupiedPosition) => [...occupiedPosition, move]);
     }
   }
 
-  function getSymbol(index) {
+  function getSymbol(index: number) {
     if (playerOneMoves.includes(index)) {
       return "X";
     } else if (playerTwoMoves.includes(index)) {
       return "O";
     }
     return "";
-  }
-  function isArrayInArray(arr, item) {
-    let item_as_string = JSON.stringify(item);
-    let contains = arr.some(function (ele) {
-      return JSON.stringify(ele) === item_as_string;
-    });
-    return contains;
   }
 
   function checkWinner(player, currentPlayer) {
@@ -67,7 +59,7 @@ const Home: NextPage = () => {
         const compareComb = isArrayInArray(winningPositions, c);
         if (compareComb) {
           setWinner(currentPlayer);
-          // reset();
+          reset();
         }
       }
     }
@@ -76,8 +68,7 @@ const Home: NextPage = () => {
   function reset() {
     setPlayerOneMoves([]);
     setPlayerTwoMoves([]);
-    setOccupiedPosition([]);
-    dispatch(setPlayers([]));
+    dispatch(resetStore());
   }
 
   useEffect(() => {

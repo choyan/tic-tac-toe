@@ -6,9 +6,6 @@ interface Props {
 }
 const Box = (props: Props) => {
   const { index, value, handleMove } = props;
-  useEffect(() => {
-    console.log(value);
-  }, [value]);
   return (
     <button
       className="col-span-1 h-40 w-[200px] border-8 border-green-400 flex"
