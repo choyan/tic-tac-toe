@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "store";
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const Box = ({ index, value, handleMove }: Props) => {
-  const [finished] = useSelector((state: RootState) => [state.game.finished]);
+  const finished = useSelector((state: RootState) => state.game.finished);
 
   return (
     <button

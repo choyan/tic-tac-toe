@@ -6,7 +6,7 @@ import { setPlayers, setCurrentMove } from "store/game";
 import { RootState } from "store";
 
 const Home: NextPage = () => {
-  const [players] = useSelector((state: RootState) => [state.game.players]);
+  const players = useSelector((state: RootState) => state.game.players);
   const dispatch = useDispatch();
   const router = useRouter();
 

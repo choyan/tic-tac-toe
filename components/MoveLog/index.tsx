@@ -1,8 +1,8 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "store";
 
 export default function MoveLog() {
-  const [moveLog] = useSelector((state: RootState) => [state.game.moveLog]);
+  const moveLog = useSelector((state: RootState) => state.game.moveLog);
   return (
       <>
       <h2 className='w-[600px] mt-6 font-semibold text-lg'>Match Log</h2>
