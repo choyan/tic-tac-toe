@@ -4,20 +4,21 @@ import Box from "components/Box";
 import { useSelector, useDispatch } from "react-redux";
 import { combinationN } from "utils/combinationN";
 import { RootState } from "store";
-import { setOccupiedPosition } from "store/game";
+import { setOccupiedPosition, setPlayers } from "store/game";
 
 const Home: NextPage = () => {
   const [playerOneMoves, setPlayerOneMoves] = useState([]);
   const [playerTwoMoves, setPlayerTwoMoves] = useState([]);
-  const [players, setPlayers] = useState([]);
+  // const [players, setPlayers] = useState([]);
   const [currentMove, setCurrentMove] = useState("");
   const [winner, setWinner] = useState("");
   const dispatch = useDispatch();
 
-  const [winningPositions, occupiedPosition] = useSelector(
+  const [winningPositions, occupiedPosition, players] = useSelector(
     (state: RootState) => [
       state.game.winningPositions,
       state.game.occupiedPosition,
+      state.game.players,
     ]
   );
 
@@ -76,7 +77,7 @@ const Home: NextPage = () => {
     setPlayerOneMoves([]);
     setPlayerTwoMoves([]);
     setOccupiedPosition([]);
-    setPlayers([]);
+    dispatch(setPlayers([]));
   }
 
   useEffect(() => {
@@ -102,7 +103,7 @@ const Home: NextPage = () => {
       alert("We need two players");
     } else {
       const newPlayers = [e.target[0].value, e.target[1].value];
-      setPlayers(newPlayers);
+      dispatch(setPlayers(newPlayers));
       setCurrentMove(e.target[0].value);
     }
   }

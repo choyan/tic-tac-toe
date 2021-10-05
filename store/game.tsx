@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface gameState {
   winningPositions: number[][];
   occupiedPosition: number[];
+  players: string[];
 }
 
 const initialState: gameState = {
@@ -17,6 +18,7 @@ const initialState: gameState = {
     [2, 4, 6],
   ],
   occupiedPosition: [],
+  players: [],
 };
 
 export const gameSlice = createSlice({
@@ -25,6 +27,9 @@ export const gameSlice = createSlice({
   reducers: {
     setOccupiedPosition: (state, action: PayloadAction<number>) => {
       state.occupiedPosition.push(action.payload);
+    },
+    setPlayers: (state, action: PayloadAction<string[]>) => {
+      state.players = action.payload;
     },
     decrement: (state) => {
       state.value -= 1;
@@ -36,7 +41,7 @@ export const gameSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setOccupiedPosition, decrement, incrementByAmount } =
+export const { setOccupiedPosition, setPlayers, decrement, incrementByAmount } =
   gameSlice.actions;
 
 export default gameSlice.reducer;
