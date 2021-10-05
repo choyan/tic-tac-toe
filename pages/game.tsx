@@ -5,46 +5,56 @@ import { useSelector, useDispatch } from "react-redux";
 import { combinationN } from "utils/combinationN";
 import { isArrayInArray } from "utils/isArrayInArray";
 import { RootState } from "store";
+import { useRouter } from "next/router";
 import {
   setOccupiedPosition,
-  setPlayers,
   setCurrentMove,
   resetStore,
+  setWinner,
+  setPlayerOneMoves,
+  setPlayerTwoMoves,
+  setFinished,
 } from "store/game";
 
-const Home: NextPage = () => {
-  const [playerOneMoves, setPlayerOneMoves] = useState([]);
-  const [playerTwoMoves, setPlayerTwoMoves] = useState([]);
-  // const [currentMove, setCurrentMove] = useState("");
-  const [winner, setWinner] = useState("");
+const Game: NextPage = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  const [winningPositions, occupiedPosition, players, currentMove] =
-    useSelector((state: RootState) => [
-      state.game.winningPositions,
-      state.game.occupiedPosition,
-      state.game.players,
-      state.game.currentMove,
-    ]);
+  const [
+    winningPositions,
+    occupiedPosition,
+    players,
+    playerOneMoves,
+    playerTwoMoves,
+    currentMove,
+    winner,
+    finished,
+  ] = useSelector((state: RootState) => [
+    state.game.winningPositions,
+    state.game.occupiedPosition,
+    state.game.players,
+    state.game.playerOneMoves,
+    state.game.playerTwoMoves,
+    state.game.currentMove,
+    state.game.winner,
+    state.game.finished,
+  ]);
+
+  function handlePlayerMove(playerMove, setPlayerMove, move) {
+    const newArr = [...playerMove, move];
+    const newArrSorted = newArr.slice().sort((a, b) => a - b);
+    dispatch(setPlayerMove(newArrSorted));
+  }
 
   function handleMove(move) {
-    if (currentMove === players[0]) {
-      if (!occupiedPosition.includes(move)) {
-        const newArr = [...playerOneMoves, move];
-        const newArrSorted = newArr.slice().sort((a, b) => a - b);
-        setPlayerOneMoves(newArrSorted);
+    if (!occupiedPosition.includes(move)) {
+      if (currentMove === players[0]) {
+        handlePlayerMove(playerOneMoves, setPlayerOneMoves, move);
         dispatch(setCurrentMove(players[1]));
-      }
-    } else {
-      if (!occupiedPosition.includes(move)) {
-        const newArr = [...playerTwoMoves, move];
-        const newArrSorted = newArr.slice().sort((a, b) => a - b);
-        setPlayerTwoMoves(newArrSorted);
+      } else {
+        handlePlayerMove(playerTwoMoves, setPlayerTwoMoves, move);
         dispatch(setCurrentMove(players[0]));
       }
-    }
-
-    if (!occupiedPosition.includes(move)) {
       dispatch(setOccupiedPosition(move));
     }
   }
@@ -63,27 +73,22 @@ const Home: NextPage = () => {
       for (const c of combinationN(player, 3)) {
         const compareComb = isArrayInArray(winningPositions, c);
         if (compareComb) {
-          setWinner(currentPlayer);
-          reset();
+          dispatch(setWinner(currentPlayer));
+          dispatch(setFinished(true));
         }
       }
     }
   }
 
   function reset() {
-    setPlayerOneMoves([]);
-    setPlayerTwoMoves([]);
     dispatch(resetStore());
   }
 
   useEffect(() => {
-    if (occupiedPosition.length === 9) {
-      if (!winner) {
-        console.log("Match Drawn. Resetting the board");
-        reset();
-      }
+    if (players.length === 0) {
+      router.push("/");
     }
-  }, [occupiedPosition]);
+  }, [players]);
 
   useEffect(() => {
     checkWinner(playerOneMoves, players[0]);
@@ -93,20 +98,37 @@ const Home: NextPage = () => {
     checkWinner(playerTwoMoves, players[1]);
   }, [playerTwoMoves]);
 
+  useEffect(() => {
+    if (occupiedPosition.length === 9) {
+      dispatch(setFinished(true));
+      if (!winner) {
+        alert("Match is Drawn.");
+      }
+    }
+  }, [occupiedPosition]);
+
   return (
-    <div className="container mx-auto">
-      {/* <form onSubmit={savePlayers}>
-        <input type="text" placeholder="Player 1 Name" id="player-1" />
-        <input type="text" placeholder="Player 2 Name" id="player-2" />
-        <button type="submit">Save</button>
-      </form> */}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <h2 className="mb-4 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+        {winner ? `Winner Is ${winner}!!!` : `Current Move: ${currentMove}`}
+      </h2>
+      <button
+        type="button"
+        className="mb-4 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        onClick={reset}
+      >
+        Reset game
+      </button>
       <div className="grid grid-cols-3 w-[600px]">
         {[...Array(9)].map((x, i) => (
           <Box index={i} value={getSymbol(i)} handleMove={handleMove} key={i} />
         ))}
       </div>
+      <p className="mb-4 text-xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-lg">
+        {winner ? `Winner Is ${winner}!!!` : `Current Move: ${currentMove}`}
+      </p>
     </div>
   );
 };
 
-export default Home;
+export default Game;

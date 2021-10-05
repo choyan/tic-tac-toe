@@ -1,13 +1,12 @@
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
-import { RootState } from "store";
 import { useSelector, useDispatch } from "react-redux";
 import { setPlayers, setCurrentMove } from "store/game";
+import { RootState } from "store";
 
-const Game: NextPage = () => {
-  const [currentMove] = useSelector((state: RootState) => [
-    state.game.currentMove,
-  ]);
+const Home: NextPage = () => {
+  const [players] = useSelector((state: RootState) => [state.game.players]);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -18,10 +17,17 @@ const Game: NextPage = () => {
     } else {
       const newPlayers = [e.target[0].value, e.target[1].value];
       dispatch(setPlayers(newPlayers));
-      setCurrentMove(e.target[0].value);
+      dispatch(setCurrentMove(e.target[0].value));
       router.push("/game");
     }
   }
+
+  useEffect(() => {
+    if (players.length > 0) {
+      router.push("/game");
+    }
+  }, [players]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -75,4 +81,4 @@ const Game: NextPage = () => {
   );
 };
 
-export default Game;
+export default Home;
